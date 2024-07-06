@@ -19,5 +19,5 @@ model User {
   email String @unique
   nickName String @unique
   password String
-  deleteAt Boolean @default(false)
+  deleted Boolean @default(false)
 }
