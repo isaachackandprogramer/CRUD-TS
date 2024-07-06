@@ -73,9 +73,37 @@ export const accountController = {
             }
 
             res.status(200).json({ message: 'logado !' })
-            
+
         } catch (err) {
             res.status(500).json({message: `houve um erro: ${err}`})
+        }
+    },
+
+    async getUsers(req: Request, res: Response) {
+        try {
+            const {nickName} = req.query
+            
+            const users = await prisma.user.findMany({
+                where: {
+                    nickName:{
+                        startsWith: String(nickName)
+                    }, 
+                },
+                 select: {
+                    name: true,
+                    email: true,
+                    nickName: true,
+                  }
+            })
+
+            if(users.length === 0) {
+                return res.status(405).json({message: "usuario nao encontrado"})
+            }
+
+            res.send(users)
+
+        } catch (error) {
+            res.status(500).json({message: `${error}`})
         }
     }
         
