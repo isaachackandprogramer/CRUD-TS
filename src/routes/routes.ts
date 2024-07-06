@@ -3,6 +3,7 @@ import { Router } from "express";
 
 const router = Router()
 
-router.post("/cadaster", accountController.createAccount)
+router.post("/register", accountController.registerAccount)
+router.post("/login", accountController.authController)
 
 export {router}

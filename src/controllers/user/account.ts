@@ -5,7 +5,7 @@ import {PrismaClient} from "@prisma/client"
 const prisma = new PrismaClient()
 
 export const accountController = {
-    async createAccount(req: Request, res: Response) {
+    async registerAccount(req: Request, res: Response) {
         try {
             const {name, email, nickName, password} = req.body
 
@@ -45,5 +45,38 @@ export const accountController = {
         } catch (err) {
             res.status(500).json({messae: `houve um erro: ${err}`})
         }
+    },
+
+    async authController(req: Request, res: Response) {
+        try {
+            const {email, password} = req.body
+
+            const user = await prisma.user.findUnique({
+                where: {
+                    email: email
+                }, select: {
+                    name: true,
+                    nickName: true,
+                    email: true,
+                    password: true
+                }
+            })
+
+            if(!user) {
+               return res.status(401).json({message: "email ou senha incorretos"})
+            }
+        
+            const verificaSenha = await bcrypt.compare(password, user.password)
+
+            if (!verificaSenha) {
+                return res.status(401).json({message: "email ou senha incorretos"})
+            }
+
+            res.status(200).json({ message: 'logado !' })
+            
+        } catch (err) {
+            res.status(500).json({message: `houve um erro: ${err}`})
+        }
     }
+        
 }
